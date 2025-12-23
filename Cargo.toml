@@ -7,6 +7,7 @@ license = "MIT"
 repository = "https://github.com/RUNFUNRUN/disksift"
 keywords = ["disk", "usage", "cli", "analysis", "space"]
 categories = ["command-line-utilities", "filesystem"]
+readme = "README.md"
 
 [dependencies]
 clap = { version = "4.5.53", features = ["derive"] }
