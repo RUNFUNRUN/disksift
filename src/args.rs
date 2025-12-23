@@ -4,20 +4,20 @@ use std::path::PathBuf;
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
 pub struct Args {
-    /// Directory to scan
-    #[arg(default_value = ".")]
+    // Directory to scan
+    #[arg(default_value = ".", help = "Directory to scan")]
     pub path: PathBuf,
 
-    /// Number of items to display
-    #[arg(short = 'n', long, default_value_t = 10)]
+    // Number of items to display
+    #[arg(short = 'n', long, default_value_t = 10, help = "Number of items to display")]
     pub limit: usize,
 
-    /// Filter items smaller than this size (e.g., "100MB", "1GB", "1024")
-    #[arg(long)]
+    // Filter items smaller than this size (e.g., "100MB", "1GB", "1024")
+    #[arg(long, help = "Filter items smaller than this size (e.g., \"100MB\", \"1GB\", \"1024\")")]
     pub min_size: Option<String>,
 
-    /// Maximum recursion depth
-    #[arg(short, long)]
+    // Maximum recursion depth
+    #[arg(short, long, help = "Maximum recursion depth")]
     pub depth: Option<usize>,
 }
 
