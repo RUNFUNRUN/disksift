@@ -1,6 +1,6 @@
 use clap::Parser;
 use colored::*;
-use humansize::{format_size, DECIMAL};
+use humansize::{DECIMAL, format_size};
 use indicatif::{ProgressBar, ProgressStyle};
 use std::cmp::Reverse;
 use std::collections::HashMap;
@@ -38,16 +38,16 @@ fn parse_size(s: &str) -> Option<u64> {
     let s = s.trim().to_uppercase();
     let (num_str, unit) = s.split_at(s.find(|c: char| c.is_alphabetic()).unwrap_or(s.len()));
     let num = num_str.parse::<f64>().ok()?;
-    
+
     let multiplier = match unit.trim() {
         "KB" | "K" => 1_000.0,
         "MB" | "M" => 1_000_000.0,
         "GB" | "G" => 1_000_000_000.0,
         "TB" | "T" => 1_000_000_000_000.0,
-        "" => 1.0, 
+        "" => 1.0,
         _ => return None,
     };
-    
+
     Some((num * multiplier) as u64)
 }
 
@@ -63,7 +63,7 @@ fn main() {
         );
         std::process::exit(1);
     }
-    
+
     // Parse min_size if provided
     let min_bytes = if let Some(ref s) = args.min_size {
         match parse_size(s) {
@@ -96,7 +96,7 @@ fn main() {
     // Map content: Path -> accumulated size
     let mut dir_sizes: HashMap<PathBuf, u64> = HashMap::new();
     let mut file_items: Vec<Item> = Vec::new();
-    
+
     let mut total_scanned_size = 0;
     let mut errors = 0;
 
@@ -135,7 +135,7 @@ fn main() {
                         let mut current = parent;
                         loop {
                             *dir_sizes.entry(current.to_path_buf()).or_insert(0) += size;
-                            
+
                             if current == root_path {
                                 break;
                             }
@@ -146,7 +146,7 @@ fn main() {
                         }
                     }
                 }
-                
+
                 if file_items.len() % 1000 == 0 {
                     spinner.set_message(format!("Found {} files...", file_items.len()));
                 }
@@ -154,12 +154,12 @@ fn main() {
             Err(_) => errors += 1,
         }
     }
-    
+
     spinner.finish_with_message("Scan complete!");
 
     // Combine files and directories into one list
     let mut all_items: Vec<Item> = file_items;
-    
+
     for (path, size) in dir_sizes {
         // Exclude the root path itself from the list as it's redundant
         if &path == root_path {
@@ -186,23 +186,25 @@ fn main() {
 
     let limit = args.limit;
     let mut count = 0;
-    
+
     for item in all_items.iter() {
         if count >= limit {
             break;
         }
-        
+
         // Skip small items filter if implemented
         // (Leaving empty for now as per MVP plan refactor)
 
         let size_str = format_size(item.size, DECIMAL);
         let icon = if item.is_dir { "📁" } else { "📄" };
         let path_display = item.path.display().to_string();
-        
+
         // Colorize
-        let size_colored = if item.size > 1_000_000_000 { // >1GB
+        let size_colored = if item.size > 1_000_000_000 {
+            // >1GB
             size_str.red().bold()
-        } else if item.size > 100_000_000 { // >100MB
+        } else if item.size > 100_000_000 {
+            // >100MB
             size_str.yellow()
         } else {
             size_str.green()
@@ -219,8 +221,16 @@ fn main() {
     }
 
     if errors > 0 {
-        eprintln!("\n{} {} errors encountered (permission denied, etc)", "Warning:".yellow(), errors);
+        eprintln!(
+            "\n{} {} errors encountered (permission denied, etc)",
+            "Warning:".yellow(),
+            errors
+        );
     }
-    
-    println!("\n{} {}", "Total size:".blue(), format_size(total_scanned_size, DECIMAL).green().bold());
+
+    println!(
+        "\n{} {}",
+        "Total size:".blue(),
+        format_size(total_scanned_size, DECIMAL).green().bold()
+    );
 }
