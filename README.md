@@ -10,7 +10,7 @@ Written in Rust.
 - 🎨 **Modern UI**: Beautiful colored output and progress bars.
 - 🔍 **Flexible**:
   - Filter by minimum size (e.g., `--min-size 100MB`)
-  - Limit recursion depth (`-d` / `--depth`)
+  - Limit recursion depth for display (`-d` / `--depth`)
   - Limit top N results (`-n` / `--limit`)
 
 ## Installation
@@ -42,7 +42,7 @@ disksift -n 20
 # Find items larger than 1GB
 disksift --min-size 1GB
 
-# Limit depth to 2 levels (fast scan)
+# Limit depth to 2 levels
 disksift -d 2
 ```
 
